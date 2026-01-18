@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+<meta charset="UTF-8">
+<title>Land Area Calculator – UP West</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#f5f7fa">
+<meta name="description" content="Land Area Calculator for UP West / Muzaffarnagar. Convert Gaj, Sqm, Acre, Hectare and Bigha.">
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --bg-light: #f5f7fa;
+        --bg-dark: #0f172a;
+        --card-light: rgba(255, 255, 255, 0.85);
+        --card-dark: rgba(30, 41, 59, 0.7);
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        --text-light: #1e293b;
+        --text-dark: #f1f5f9;
+        --border-light: rgba(255,255,255,0.4);
+        --border-dark: rgba(255,255,255,0.05);
+    }
+
+    body {
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    [data-bs-theme="light"] {
+        background: var(--bg-light);
+        color: var(--text-light);
+    }
+
+    [data-bs-theme="dark"] {
+        background: var(--bg-dark);
+        color: var(--text-dark);
+    }
+
+    /* Glassmorphism Card */
+    .glass-card {
+        border-radius: 24px;
+        padding: 2rem;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-light);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    [data-bs-theme="light"] .glass-card {
+        background: var(--card-light);
+    }
+
+    [data-bs-theme="dark"] .glass-card {
+        background: var(--card-dark);
+        border-color: var(--border-dark);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-control, .form-select {
+        border-radius: 12px;
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        background-color: rgba(255,255,255,0.5);
+    }
+    
+    [data-bs-theme="dark"] .form-control, 
+    [data-bs-theme="dark"] .form-select {
+        background-color: rgba(15, 23, 42, 0.5);
+        border-color: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+    }
+
+    .unit-label {
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        opacity: 0.8;
+        margin-bottom: 8px;
+        display: block;
+        text-transform: uppercase;
+    }
+
+    /* Actions */
+    .btn-action {
+        width: 100%;
+        padding: 12px;
+        font-weight: 600;
+        border: none;
+        border-radius: 14px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-reset {
+        background: rgba(99, 102, 241, 0.1);
+        color: #6366f1;
+    }
+    
+    [data-bs-theme="dark"] .btn-reset {
+        background: rgba(99, 102, 241, 0.2);
+        color: #818cf8;
+    }
+
+    .btn-print {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-action:active {
+        transform: translateY(1px);
+    }
+
+    /* Theme Switch */
+    .theme-switch {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 4px;
+        background: rgba(0,0,0,0.05);
+        padding: 4px;
+        border-radius: 20px;
+        backdrop-filter: blur(4px);
+    }
+    
+    [data-bs-theme="dark"] .theme-switch {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .theme-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        color: inherit;
+        opacity: 0.5;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .theme-btn.active {
+        background-color: white;
+        color: #333;
+        opacity: 1;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    [data-bs-theme="dark"] .theme-btn.active {
+        background-color: #334155;
+        color: white;
+    }
+
+    /* Header */
+    .app-title {
+        background: var(--primary-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Rate Chips */
+    .rate-chip {
+        border: 1px solid rgba(0,0,0,0.1);
+        background: rgba(255,255,255,0.6);
+        color: var(--text-light);
+        font-size: 0.8rem;
+        padding: 6px 16px;
+        border-radius: 50px;
+        transition: all 0.2s;
+    }
+    
+    [data-bs-theme="dark"] .rate-chip {
+        background: rgba(255,255,255,0.05);
+        color: var(--text-dark);
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    .rate-chip:hover {
+        transform: translateY(-2px);
+        background: var(--primary-gradient);
+        color: white;
+        border-color: transparent;
+    }
+
+    /* Print Styles */
+    /* Print Styles */
+    @media print {
+        @page {
+            margin: 10mm;
+            size: A4;
+        }
+
+        .theme-switch, .no-print, .btn-action, .copy-feedback {
+            display: none !important;
+        }
+        
+        body, html {
+            background: white !important;
+            color: black !important;
+            height: auto;
+            display: block;
+            font-size: 12pt;
+            font-family: "Times New Roman", Times, serif !important;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .col-12.col-md-8.col-lg-5 {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
+
+        header {
+            margin-bottom: 10mm !important;
+            padding: 0 !important;
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px !important;
+        }
+
+        header h1 {
+            font-size: 20pt !important;
+            margin-bottom: 5px !important;
+            color: black !important;
+            -webkit-text-fill-color: black !important;
+        }
+        
+        header p {
+            font-size: 10pt !important;
+            opacity: 1 !important;
+            color: #555 !important;
+        }
+
+        .glass-card {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+            background: white !important;
+            padding: 15px !important;
+            border-radius: 8px !important;
+            backdrop-filter: none !important;
+        }
+
+        /* Use Grid for Inputs to save vertical space */
+        .glass-card > div:not(.print-break):not(.row) {
+            /* This targets the wrapping divs of inputs if they aren't explicitly structured yet */
+            display: inline-block;
+            width: 48%;
+            margin-bottom: 10px !important;
+            vertical-align: top;
+        }
+        
+        .print-break {
+            /* Targeting specific divs identified in HTML */
+            display: inline-block;
+            width: 48%;
+            margin-bottom: 15px !important;
+            page-break-inside: avoid;
+            vertical-align: top;
+        }
+
+        /* Full width for Price Calculator title */
+        .print-break:has(h6) {
+           width: 100%;
+           display: block;
+           border-top: 1px dashed #ccc;
+           padding-top: 15px;
+           margin-top: 5px;
+        }
+        
+        /* Ensure rows inside price calculator work */
+        .print-break .row {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            margin: 0;
+        }
+        
+        .print-break .col-6 {
+            width: 50% !important;
+            padding: 0 5px;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #ccc !important;
+            background: #f8f9fa !important;
+            color: black !important;
+            font-size: 11pt !important;
+            padding: 5px 10px !important;
+            height: auto !important;
+            font-weight: bold;
+        }
+        
+        .form-select {
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .unit-label {
+            font-size: 9pt !important;
+            color: #444 !important;
+            margin-bottom: 2px !important;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        h6 {
+            font-size: 12pt !important;
+            color: black !important;
+            margin-bottom: 10px !important;
+        }
+
+        hr {
+            display: none;
+        }
+        
+        /* Footer disclaimer */
+        .glass-card::after {
+            content: "Generated by Land Area Calculator";
+            display: block;
+            text-align: center;
+            font-size: 8pt;
+            color: #888;
+            margin-top: 20px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container py-3 flex-grow-1 d-flex align-items-center justify-content-center">
+
+    <div class="theme-switch no-print">
+        <button class="theme-btn active" id="btn-light" onclick="setTheme('light')" aria-label="Light Mode"><i class="bi bi-sun-fill"></i></button>
+        <button class="theme-btn" id="btn-dark" onclick="setTheme('dark')" aria-label="Dark Mode"><i class="bi bi-moon-stars-fill"></i></button>
+    </div>
+
+    <div class="col-12 col-md-8 col-lg-5">
+
+        <header class="text-center mb-4 mt-4">
+            <h1 class="fw-bold app-title">Land Calculator</h1>
+            <p class="small opacity-75 mb-2">UP West / Muzaffarnagar Standard</p>
+            <!-- <a href="subdivision.html" class="badge bg-primary text-decoration-none bg-opacity-10 text-primary border border-primary no-print">
+                <i class="bi bi-grid-3x3"></i> Try Subdivision AI
+            </a> -->
+        </header>
+
+        <div class="glass-card">
+
+            <!-- Gaj -->
+            <div class="mb-3 print-break">
+                <label class="unit-label" for="gaj">वर्ग गज (Gaj)</label>
+                <input type="number" inputmode="decimal" class="form-control" id="gaj" placeholder="0">
+            </div>
+
+            <!-- Sqm -->
+            <div class="mb-3 print-break">
+                <label class="unit-label" for="sqm">वर्ग मीटर (Sq Meter)</label>
+                <input type="number" inputmode="decimal" class="form-control" id="sqm" placeholder="0">
+            </div>
+
+            <!-- Acre -->
+            <div class="mb-3 print-break">
+                <label class="unit-label" for="acre">एकड़ (Acre)</label>
+                <input type="number" inputmode="decimal" class="form-control" id="acre" placeholder="0">
+            </div>
+
+            <!-- Hectare -->
+            <div class="mb-3 print-break">
+                <label class="unit-label" for="hectare">हेक्टेयर (Hectare)</label>
+                <input type="number" inputmode="decimal" class="form-control" id="hectare" placeholder="0">
+            </div>
+
+            <!-- Bigha -->
+            <div class="mb-3 print-break">
+                <label class="unit-label" for="bigha">बीघा (Bigha)</label>
+                
+                <select class="form-select mb-2" id="bighaType">
+                    <option value="std">Standard – 5 Biswa (756.25 Gaj)</option>
+                    <option value="large">Large – 6.6667 Biswa (1008.33 Gaj)</option>
+                </select>
+
+                <input type="number" inputmode="decimal" class="form-control" id="bigha" placeholder="0">
+            </div>
+
+            <hr class="my-4" style="opacity: 0.1">
+
+            <!-- Price Calculator -->
+            <div class="print-break">
+                <h6 class="unit-label text-primary mb-3"><i class="bi bi-calculator"></i> Price Estimator</h6>
+                
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="unit-label" for="rate">Rate / Gaj (₹)</label>
+                        <input type="number" inputmode="decimal" class="form-control" id="rate" placeholder="₹ Rate">
+                    </div>
+                    <div class="col-6">
+                        <label class="unit-label" for="totalAmount">Total Amount</label>
+                        <input type="text" class="form-control fw-bold" id="totalAmount" placeholder="-" readonly style="background-color: rgba(99, 102, 241, 0.1); color: var(--bs-primary);">
+                    </div>
+                </div>
+
+                <!-- Amount in Words -->
+                <div class="mt-2 text-end">
+                    <span id="amountWords" class="small text-muted fst-italic" style="font-size: 0.75rem;"></span>
+                </div>
+
+                <!-- Quick Rates -->
+                <div class="mt-3 d-flex gap-2 flex-wrap justify-content-center no-print">
+                    <button class="btn rate-chip" onclick="setRate(10000)">₹10k</button>
+                    <button class="btn rate-chip" onclick="setRate(15000)">₹15k</button>
+                    <button class="btn rate-chip" onclick="setRate(20000)">₹20k</button>
+                    <button class="btn rate-chip" onclick="setRate(25000)">₹25k</button>
+                    <button class="btn rate-chip" onclick="setRate(50000)">₹50k</button>
+                </div>
+            </div>
+
+            <div class="row g-2 mt-4 no-print">
+                <div class="col-6">
+                    <button class="btn-action btn-reset" onclick="clearAll()">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button class="btn-action btn-print" onclick="window.print()">
+                        <i class="bi bi-printer-fill"></i> Print
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center small opacity-75 mt-3 no-print">
+            1 Gaj = 0.836 sqm • 1 Acre = 4046.86 sqm<br>
+            1 Bigha = 632.321 / 843.1 sqm
+        </div>
+
+    </div>
+</div>
+
+<script>
+const GAJ_TO_SQM = 0.836;
+const ACRE_TO_SQM = 4046.86;
+const HECTARE_TO_SQM = 10000;
+const BIGHA_STD_TO_SQM = 632.321;
+const BIGHA_LARGE_TO_SQM = 843.1;
+
+const gaj = document.getElementById("gaj");
+const sqm = document.getElementById("sqm");
+const acre = document.getElementById("acre");
+const hectare = document.getElementById("hectare");
+const bigha = document.getElementById("bigha");
+const bighaType = document.getElementById("bighaType");
+
+const rate = document.getElementById("rate");
+const totalAmount = document.getElementById("totalAmount");
+const amountWords = document.getElementById("amountWords");
+
+// Theme Logic
+const htmlEl = document.documentElement;
+const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+
+let lock = false;
+
+function bighaToSqm(){
+    return bighaType.value === "large" ? BIGHA_LARGE_TO_SQM : BIGHA_STD_TO_SQM;
+}
+
+function fmt(v, p=6){
+    return parseFloat(v).toFixed(p);
+}
+
+// Number to Words (Indian System)
+function numToWords(n) {
+    if (n === 0) return "";
+    
+    // Round to 2 decimal places first to avoid floating point issues
+    n = Math.round(n * 100) / 100;
+    
+    let str = n.toString();
+    let [whole, decimal] = str.split('.');
+    let num = parseInt(whole);
+    
+    if (isNaN(num)) return "";
+
+    const units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+    const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+    
+    function convertGroup(n) {
+        if (n === 0) return "";
+        if (n < 10) return units[n];
+        if (n < 20) return teens[n - 10];
+        if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + units[n % 10] : "");
+        if (n < 1000) return units[Math.floor(n / 100)] + " Hundred" + (n % 100 !== 0 ? " " + convertGroup(n % 100) : "");
+        return "";
+    }
+
+    let result = "";
+    
+    // Crores
+    if (num >= 10000000) {
+        result += convertGroup(Math.floor(num / 10000000)) + " Crore ";
+        num %= 10000000;
+    }
+    
+    // Lakhs
+    if (num >= 100000) {
+        result += convertGroup(Math.floor(num / 100000)) + " Lakh ";
+        num %= 100000;
+    }
+    
+    // Thousands
+    if (num >= 1000) {
+        result += convertGroup(Math.floor(num / 1000)) + " Thousand ";
+        num %= 1000;
+    }
+    
+    // Remaining (Hundreds, Tens, Units)
+    if (num > 0) {
+        result += convertGroup(num);
+    }
+    
+    // Format
+    result = result.trim();
+    if (result) result += " Rupees Only";
+    
+    return result;
+}
+
+function calculatePrice() {
+    let gajVal = parseFloat(gaj.value) || 0;
+    let rateVal = parseFloat(rate.value) || 0;
+    
+    if (gajVal > 0 && rateVal > 0) {
+        let total = gajVal * rateVal;
+        
+        // Format as Indian Currency
+        totalAmount.value = "₹ " + total.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+        
+        // Convert to Words
+        amountWords.textContent = numToWords(total);
+    } else {
+        totalAmount.value = "";
+        amountWords.textContent = "";
+    }
+}
+
+function setRate(val) {
+    rate.value = val;
+    calculatePrice();
+}
+
+function fromSqm(){
+    if(lock) return; 
+    lock = true;
+    let v = parseFloat(sqm.value) || 0;
+    if(sqm.value === "") { clearAll(false); lock = false; return; } // Handle empty
+    
+    gaj.value = fmt(v / GAJ_TO_SQM, 4);
+    acre.value = fmt(v / ACRE_TO_SQM);
+    hectare.value = fmt(v / HECTARE_TO_SQM);
+    bigha.value = fmt(v / bighaToSqm());
+    calculatePrice();
+    lock = false;
+}
+
+function fromGaj(){
+    if(lock) return; 
+    lock = true;
+    let val = parseFloat(gaj.value) || 0;
+    if(gaj.value === "") { clearAll(false); lock = false; return; }
+
+    let s = val * GAJ_TO_SQM;
+    sqm.value = fmt(s, 4);
+    acre.value = fmt(s / ACRE_TO_SQM);
+    hectare.value = fmt(s / HECTARE_TO_SQM);
+    bigha.value = fmt(s / bighaToSqm());
+    calculatePrice();
+    lock = false;
+}
+
+function fromAcre(){
+    if(lock) return; 
+    lock = true;
+    let val = parseFloat(acre.value) || 0;
+    if(acre.value === "") { clearAll(false); lock = false; return; }
+
+    let s = val * ACRE_TO_SQM;
+    sqm.value = fmt(s, 4);
+    gaj.value = fmt(s / GAJ_TO_SQM, 4);
+    hectare.value = fmt(s / HECTARE_TO_SQM);
+    bigha.value = fmt(s / bighaToSqm());
+    calculatePrice();
+    lock = false;
+}
+
+function fromHectare(){
+    if(lock) return; 
+    lock = true;
+    let val = parseFloat(hectare.value) || 0;
+    if(hectare.value === "") { clearAll(false); lock = false; return; }
+
+    let s = val * HECTARE_TO_SQM;
+    sqm.value = fmt(s, 4);
+    gaj.value = fmt(s / GAJ_TO_SQM, 4);
+    acre.value = fmt(s / ACRE_TO_SQM);
+    bigha.value = fmt(s / bighaToSqm());
+    calculatePrice();
+    lock = false;
+}
+
+function fromBigha(){
+    if(lock) return; 
+    lock = true;
+    let val = parseFloat(bigha.value) || 0;
+    if(bigha.value === "") { clearAll(false); lock = false; return; }
+
+    let s = val * bighaToSqm();
+    sqm.value = fmt(s, 4);
+    gaj.value = fmt(s / GAJ_TO_SQM, 4);
+    acre.value = fmt(s / ACRE_TO_SQM);
+    hectare.value = fmt(s / HECTARE_TO_SQM);
+    calculatePrice();
+    lock = false;
+}
+
+function clearAll(clearSelf = true){
+    if(clearSelf) {
+        [gaj, sqm, acre, hectare, bigha, rate, totalAmount].forEach(i => i.value = "");
+        amountWords.textContent = "";
+    } else {
+         [gaj, sqm, acre, hectare, bigha, totalAmount].forEach(i => i.value = "");
+         amountWords.textContent = "";
+    }
+}
+
+gaj.addEventListener("input", fromGaj);
+sqm.addEventListener("input", fromSqm);
+acre.addEventListener("input", fromAcre);
+hectare.addEventListener("input", fromHectare);
+bigha.addEventListener("input", fromBigha);
+bighaType.addEventListener("change", () => { if(bigha.value) fromBigha() });
+rate.addEventListener("input", calculatePrice);
+
+function setTheme(t){
+    htmlEl.setAttribute("data-bs-theme", t);
+    document.getElementById("btn-light").classList.toggle("active", t === "light");
+    document.getElementById("btn-dark").classList.toggle("active", t === "dark");
+    localStorage.setItem("theme", t);
+    
+    // Update Meta Theme Color
+    if (t === 'dark') {
+        metaThemeColor.setAttribute('content', '#0f172a');
+        
+        // Dark Mode Adjustments
+        document.querySelector("meta[name='theme-color']").setAttribute('content', '#0f172a');
+        
+    } else {
+        metaThemeColor.setAttribute('content', '#f5f7fa');
+    }
+}
+
+setTheme(localStorage.getItem("theme") || "light");
+
+// Register Service Worker if supported
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js");
+    });
+}
+</script>
+
+</body>
+</html>

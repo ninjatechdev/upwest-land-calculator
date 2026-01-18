@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>Land Subdivision AI - UP West</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#f5f7fa">
+    <meta name="description" content="AI-powered Land Subdivision and Optimization Algorithm.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --bg-light: #f5f7fa;
+            --bg-dark: #0f172a;
+            --card-light: rgba(255, 255, 255, 0.85);
+            --card-dark: rgba(30, 41, 59, 0.7);
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --text-light: #1e293b;
+            --text-dark: #f1f5f9;
+            --border-light: rgba(255,255,255,0.4);
+            --border-dark: rgba(255,255,255,0.05);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        [data-bs-theme="light"] {
+            background: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        [data-bs-theme="dark"] {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .glass-card {
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-light);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        [data-bs-theme="light"] .glass-card {
+            background: var(--card-light);
+        }
+
+        [data-bs-theme="dark"] .glass-card {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            background-color: rgba(255,255,255,0.5);
+        }
+        
+        [data-bs-theme="dark"] .form-control, 
+        [data-bs-theme="dark"] .form-select {
+            background-color: rgba(15, 23, 42, 0.5);
+            border-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .form-control:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-calc {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 12px;
+            width: 100%;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: transform 0.2s;
+        }
+        
+        .btn-calc:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-card {
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .result-item {
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+        }
+
+        .result-label {
+            opacity: 0.7;
+        }
+        
+        .result-val {
+            font-weight: 600;
+        }
+        
+        .back-link {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.6;
+            margin-bottom: 20px;
+        }
+        [data-bs-theme="dark"] .back-link { color: var(--text-dark); }
+        .back-link:hover { opacity: 1; }
+
+        /* Theme Switch */
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 20px;
+            padding: 4px;
+            display: flex;
+        }
+        [data-bs-theme="dark"] .theme-switch { background: rgba(255,255,255,0.1); }
+        .theme-btn {
+            width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; opacity: 0.5; color: inherit;
+        }
+        .theme-btn.active { background: white; opacity: 1; color: #333; }
+        [data-bs-theme="dark"] .theme-btn.active { background: #334155; color: white; }
+
+    </style>
+</head>
+<body>
+
+<div class="container py-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+
+    <div class="theme-switch">
+        <button class="theme-btn active" id="btn-light" onclick="setTheme('light')"><i class="bi bi-sun-fill"></i></button>
+        <button class="theme-btn" id="btn-dark" onclick="setTheme('dark')"><i class="bi bi-moon-stars-fill"></i></button>
+    </div>
+
+    <div class="col-12 col-md-8 col-lg-6">
+        
+        <a href="index.html" class="back-link"><i class="bi bi-arrow-left"></i> Back to Calculator</a>
+
+        <header class="mb-4">
+            <h2 class="fw-bold mb-1">Subdivision AI <span class="badge bg-primary fs-6 align-middle">Beta</span></h2>
+            <p class="small opacity-75">Optimize plot layout and road efficiency</p>
+        </header>
+
+        <div class="glass-card">
+            
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="small fw-bold opacity-75 mb-1">Total Length (ft)</label>
+                    <input type="number" id="landL" class="form-control" placeholder="e.g. 2000">
+                </div>
+                <div class="col-6">
+                    <label class="small fw-bold opacity-75 mb-1">Total Width (ft)</label>
+                    <input type="number" id="landW" class="form-control" placeholder="e.g. 1000">
+                </div>
+
+                <div class="col-6">
+                    <label class="small fw-bold opacity-75 mb-1">Road Width (ft)</label>
+                    <input type="number" id="roadW" class="form-control" value="20">
+                </div>
+                <div class="col-12">
+                     <!-- Spacer or simplified message -->
+                     <div class="alert alert-light border small py-2 mb-0">
+                        <i class="bi bi-info-circle"></i> Calculates sellable area by estimating optimal road network for a standard layout.
+                     </div>
+                </div>
+            </div>
+
+            <button class="btn-calc" onclick="calculateSellableArea()">Calculate Sellable Area</button>
+
+            <!-- Results -->
+            <div id="results" class="result-card">
+                <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-pie-chart-fill"></i> Area Analysis</h5>
+                
+                <div class="result-item">
+                    <span class="result-label">Total Land Area</span>
+                    <span class="result-val" id="resTotal">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Road Infrastructure</span>
+                    <span class="result-val text-warning" id="resRoad">-</span>
+                </div>
+                <hr style="opacity:0.1">
+                <div class="result-item">
+                    <span class="result-label fs-5 fw-bold">Net Sellable Area</span>
+                    <span class="result-val fw-bolder fs-4 text-success" id="resSellable">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Efficiency</span>
+                    <span class="result-val fw-bold" id="resEff">-</span>
+                </div>
+                
+                <div class="mt-3 p-3 bg-white bg-opacity-10 rounded border border-light">
+                    <small class="fw-bold d-block mb-1 opacity-75">Layout Estimation:</small>
+                    <p class="small mb-0 fst-italic" id="resLogic">-</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+// --- SELLABLE AREA ESTIMATOR ---
+
+function calculateSellableArea() {
+    const L = parseFloat(document.getElementById('landL').value);
+    const W = parseFloat(document.getElementById('landW').value);
+    const roadW = parseFloat(document.getElementById('roadW').value);
+    
+    // Standard depth for residential plots
+    const estDepth = 40; 
+    
+    if(!L || !W || !roadW) {
+        alert("Please enter Length, width and Road Width");
+        return;
+    }
+
+    const totalArea = L * W;
+    
+    // Evaluate two primary orientations for the "Parallel Roads"
+    // Option A: Roads run along Length (Parallel to L), spaced along Width
+    let r1 = estimateRoads(L, W, roadW, estDepth, "Length-wise");
+    
+    // Option B: Roads run along Width (Parallel to W), spaced along Length
+    let r2 = estimateRoads(W, L, roadW, estDepth, "Width-wise");
+    
+    // Pick the one with LESS road area (More sellable area)
+    // BUT we must have valid sellable area.
+    let best = r1;
+    if (r2.roadArea < r1.roadArea) {
+        // Only if r2 is valid? Both should be valid estimations.
+        best = r2;
+    }
+
+    const sellable = totalArea - best.roadArea;
+    const eff = (sellable / totalArea) * 100;
+
+    displayResults(totalArea, best.roadArea, sellable, eff, best.desc);
+}
+
+function estimateRoads(parallelLen, crossLen, roadW, depth, orientation) {
+    // Strategy: "Plot-Road-Plot" Unit (P-R-P)
+    // Most efficient developer layout: Road in middle, plots on both sides.
+    // Unit Width = Depth + RoadW + Depth = (2 * Depth) + RoadW.
+    // This unit provides 100% access to 2 full rows of plots using 1 shared road.
+    // It assumes NO external boundary roads (conservative calculation for internal infrastructure).
+
+    let unitW = (2 * depth) + roadW;
+    
+    // How many full units fit?
+    let numUnits = Math.floor(crossLen / unitW);
+    
+    let roadCount = numUnits; // 1 road per unit
+    let occupiedWidth = numUnits * unitW;
+    let leftover = crossLen - occupiedWidth;
+    
+    // Handle Leftover Strip
+    // If leftover is big enough for [Road + Plot] (at least one row needs access), add a road.
+    // If we only have [Plot] space left (>= Depth) but NO space for road?
+    // We assume it cannot be sold as standard plots without a road. 
+    // Unless we assume it attaches to the boundary?
+    // Rule: "There has to have a road for each plot".
+    // So if we have depth for a plot but no road width, we can't count it.
+    // IF leftover >= (RoadW + Depth) -> We can add 1 Road + 1 Row.
+    
+    if (leftover >= (roadW + depth)) {
+        roadCount++;
+        // We conceptually add a road and a single row of plots
+    } 
+    
+    // Total Parallel Road Area
+    let areaParallel = roadCount * (parallelLen * roadW);
+    
+    // --- Cross Roads (Connectors) ---
+    // If block is too long, we need breaks.
+    let crossRoadsCount = 0;
+    if (parallelLen > 500) { 
+         crossRoadsCount = Math.floor(parallelLen / 400);
+    }
+    
+    // Cross roads run across the `crossLen` (or at least the developed part).
+    // Simplify: Assume cross roads run full width to connect parallel roads.
+    let areaCross = crossRoadsCount * (crossLen * roadW);
+    
+    // --- Intersection Correction ---
+    let intersectionArea = roadCount * crossRoadsCount * (roadW * roadW);
+    
+    let totalRoadArea = areaParallel + areaCross - intersectionArea;
+    
+    // Safety cap
+    if (totalRoadArea > (parallelLen * crossLen)) totalRoadArea = parallelLen * crossLen; // should not happen
+
+    return {
+        roadArea: totalRoadArea,
+        desc: `${orientation}: ${roadCount} Parallel Road(s) + ${crossRoadsCount} Cross Connector(s). Logic: P-R-P blocks.`
+    };
+}
+
+function formatArea(sqft) {
+    let s = Math.round(sqft).toLocaleString();
+    let sqm = Math.round(sqft / 10.7639).toLocaleString();
+    let gaj = Math.round(sqft / 9).toLocaleString(); 
+    return `${s} <span class="fs-6 opacity-75 fw-normal">sqft</span><br><span class="fs-6 opacity-75 fw-normal">${gaj} Gaj • ${sqm} sqm</span>`; 
+}
+
+function displayResults(total, road, sellable, eff, logic) {
+    const r = document.getElementById('results');
+    r.style.display = 'block';
+
+    document.getElementById('resTotal').innerHTML = formatArea(total);
+    document.getElementById('resRoad').innerHTML = formatArea(road);
+    document.getElementById('resSellable').innerHTML = formatArea(sellable);
+    document.getElementById('resEff').innerText = eff.toFixed(1) + "%";
+    document.getElementById('resLogic').innerText = logic;
+    
+    r.scrollIntoView({behavior: "smooth"});
+}
+
+// Theme Init
+function setTheme(t) {
+    document.documentElement.setAttribute('data-bs-theme', t);
+    localStorage.setItem('theme', t);
+    document.getElementById('btn-light').classList.toggle('active', t === 'light');
+    document.getElementById('btn-dark').classList.toggle('active', t === 'dark');
+}
+setTheme(localStorage.getItem('theme') || 'light');
+</script>
+</body>
+</html>
