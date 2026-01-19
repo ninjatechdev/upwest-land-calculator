@@ -53,6 +53,7 @@
       "type": "image/png"
     }
   ],
+  "id": "/upwest-land-calculator/",
   "start_url": "/upwest-land-calculator/",
   "scope": "/upwest-land-calculator/",
   "display": "standalone",

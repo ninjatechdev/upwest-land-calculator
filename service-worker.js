@@ -1,4 +1,4 @@
-const CACHE_NAME = "land-calculator-v1";
+const CACHE_NAME = "land-calculator-v3";
 
 const FILES = [
     "./",
